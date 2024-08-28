@@ -1,6 +1,6 @@
 package com.gh.sd.example;
 
-public class Main {
+public class ThreadCreation1 {
     public static void main(String[] args) throws InterruptedException {
         var thread = new Thread(() -> {
             System.out.println("We are now in thread " + Thread.currentThread().getName());
