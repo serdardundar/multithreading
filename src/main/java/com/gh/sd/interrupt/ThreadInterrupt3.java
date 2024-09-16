@@ -1,8 +1,4 @@
-package com.gh.sd.interrupt;/*
- * Copyright (c) 2019-2023. Michael Pogrebinsky - Top Developer Academy
- * https://topdeveloperacademy.com
- * All rights reserved
- */
+package com.gh.sd.interrupt;
 
 import java.math.BigInteger;
 
