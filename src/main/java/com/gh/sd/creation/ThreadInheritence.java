@@ -1,4 +1,4 @@
-package com.gh.sd.example2;
+package com.gh.sd.creation;
 
 public class ThreadInheritence {
 

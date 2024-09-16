@@ -1,4 +1,4 @@
-package com.gh.sd.example3;
+package com.gh.sd.creation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class ThreadCreation2 {
     }
 
     private static class Vault {
-        private int password;
+        private final int password;
 
         public Vault(int password) {
             this.password = password;
@@ -34,6 +34,7 @@ public class ThreadCreation2 {
             try {
                 Thread.sleep(5);
             } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
             }
             return this.password == guess;
         }
@@ -94,6 +95,7 @@ public class ThreadCreation2 {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
                 }
                 System.out.println(i);
             }
