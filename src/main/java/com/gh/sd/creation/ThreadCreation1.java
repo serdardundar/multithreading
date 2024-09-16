@@ -1,4 +1,4 @@
-package com.gh.sd.example;
+package com.gh.sd.creation;
 
 public class ThreadCreation1 {
     public static void main(String[] args) throws InterruptedException {
