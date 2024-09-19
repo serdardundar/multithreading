@@ -12,8 +12,6 @@ public class WithoutCriticalSection {
         DecrementingThread decrementingThread = new DecrementingThread(inventoryCounter);
 
         incrementingThread.start();
-        //incrementingThread.join();
-
         decrementingThread.start();
 
         incrementingThread.join();
