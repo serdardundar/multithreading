@@ -1,10 +1,12 @@
 package com.gh.sd.criticalsection;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
- * Now we have synchronized methods so the result never changes
- * Synchronized methods are defined as Critical Section
+ * Now we have AtomicInteger to implement Concurrency
+ * AtomicInteger is used to have synchronized values
  */
-public class WithCriticalSection {
+public class AtomicOperation {
 
     public static void main(String[] args) throws InterruptedException {
         InventoryCounter inventoryCounter = new InventoryCounter();
@@ -53,18 +55,18 @@ public class WithCriticalSection {
     }
 
     private static class InventoryCounter {
-        private int items = 0;
+        private final AtomicInteger items = new AtomicInteger(0);
 
-        public synchronized void increment() {
-            items++;
+        public void increment() {
+            items.getAndIncrement();
         }
 
-        public synchronized void decrement() {
-            items--;
+        public void decrement() {
+            items.getAndDecrement();
         }
 
-        public synchronized int getItems() {
-            return items;
+        public int getItems() {
+            return items.get();
         }
     }
 }

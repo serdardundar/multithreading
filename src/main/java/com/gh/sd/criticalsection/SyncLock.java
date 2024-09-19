@@ -4,7 +4,7 @@ package com.gh.sd.criticalsection;
  * Now we have synchronized methods so the result never changes
  * Synchronized methods are defined as Critical Section
  */
-public class WithCriticalSection2 {
+public class SyncLock {
 
     public static void main(String[] args) throws InterruptedException {
         InventoryCounter inventoryCounter = new InventoryCounter();
