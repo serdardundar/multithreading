@@ -1,4 +1,4 @@
-package com.gh.sd.datarace;
+package com.gh.sd.race.condition;
 
 public class DataRace {
 
