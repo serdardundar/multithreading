@@ -95,7 +95,7 @@ public class WaitNotifyApplication {
             while (true) {
                 float[][] matrix1 = readMatrix();
                 float[][] matrix2 = readMatrix();
-                if (matrix1 == null || matrix2 == null) {
+                if (matrix1.length == 0 || matrix2.length == 0) {
                     queue.terminate();
                     System.out.println("No more matrices to read. Producer Thread is terminating");
                     return;
@@ -117,7 +117,7 @@ public class WaitNotifyApplication {
                 }
                 String[] line = scanner.nextLine().split(",");
                 for (int c = 0; c < N; c++) {
-                    matrix[r][c] = Float.valueOf(line[c]);
+                    matrix[r][c] = Float.parseFloat(line[c]);
                 }
             }
             scanner.nextLine();

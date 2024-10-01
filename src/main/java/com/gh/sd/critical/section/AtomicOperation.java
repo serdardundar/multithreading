@@ -1,10 +1,12 @@
-package com.gh.sd.criticalsection;
+package com.gh.sd.critical.section;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Now we have synchronized methods so the result never changes
- * Synchronized methods are defined as Critical Section
+ * Now we have AtomicInteger to implement Concurrency
+ * AtomicInteger is used to have synchronized values
  */
-public class SyncLock {
+public class AtomicOperation {
 
     public static void main(String[] args) throws InterruptedException {
         InventoryCounter inventoryCounter = new InventoryCounter();
@@ -53,26 +55,18 @@ public class SyncLock {
     }
 
     private static class InventoryCounter {
-        private int items = 0;
-        final Object lock = new Object();
+        private final AtomicInteger items = new AtomicInteger(0);
 
         public void increment() {
-            synchronized (lock) {
-                items++;
-            }
+            items.getAndIncrement();
         }
 
         public void decrement() {
-            synchronized (lock) {
-                items--;
-            }
-
+            items.getAndDecrement();
         }
 
         public int getItems() {
-            synchronized (lock) {
-                return items;
-            }
+            return items.get();
         }
     }
 }
