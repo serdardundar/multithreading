@@ -1,4 +1,4 @@
-package com.gh.sd.criticalsection;
+package com.gh.sd.critical.section;
 
 /**
  * There is no definition of critical section

@@ -1,4 +1,4 @@
-package com.gh.sd.criticalsection;
+package com.gh.sd.critical.section;
 
 /**
  * Now we have synchronized methods so the result never changes

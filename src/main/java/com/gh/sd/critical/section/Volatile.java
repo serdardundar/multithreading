@@ -1,4 +1,4 @@
-package com.gh.sd.criticalsection;
+package com.gh.sd.critical.section;
 
 import java.util.Random;
 
