@@ -58,11 +58,11 @@ public class AtomicOperation {
         private final AtomicInteger items = new AtomicInteger(0);
 
         public void increment() {
-            items.getAndIncrement();
+            items.incrementAndGet();
         }
 
         public void decrement() {
-            items.getAndDecrement();
+            items.decrementAndGet();
         }
 
         public int getItems() {

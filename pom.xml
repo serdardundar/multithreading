@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.gh.sd</groupId>
-    <artifactId>multithreading</artifactId>
+    <artifactId>multi-threading</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
