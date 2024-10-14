@@ -16,7 +16,7 @@ public class ThreadJoin1 {
         }
 
         for (Thread thread : threads) {
-            //We make all threads are Daemons because we want them finished when Main thread is interrupted
+            //We make all threads are Daemons because we want them finished when AtomicRefExample thread is interrupted
 
             thread.setDaemon(true);
             thread.start();
