@@ -1,8 +1,4 @@
-package com.gh.sd.virtual.threads;/*
- * Copyright (c) 2023. Michael Pogrebinsky - Top Developer Academy
- * https://topdeveloperacademy.com
- * All rights reserved
- */
+package com.gh.sd.virtual.threads;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +13,7 @@ public class VirtualThreadsWithBlockingCalls {
             Thread virtualThread = Thread.ofVirtual().unstarted(new BlockingTask());
             virtualThreads.add(virtualThread);
         }
-
-        //TODO add some code here
-
+        
         for (Thread virtualThread : virtualThreads) {
             virtualThread.start();
         }
