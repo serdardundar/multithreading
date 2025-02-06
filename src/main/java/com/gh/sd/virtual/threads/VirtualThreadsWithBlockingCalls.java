@@ -18,6 +18,8 @@ public class VirtualThreadsWithBlockingCalls {
             virtualThreads.add(virtualThread);
         }
 
+        //TODO add some code here
+
         for (Thread virtualThread : virtualThreads) {
             virtualThread.start();
         }
