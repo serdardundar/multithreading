@@ -1,133 +1,133 @@
 package com.gh.sd.atomic.reference;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+/**
+ * Demonstrates lock-free and standard stack implementations with concurrent operations.
+ */
 public class LockFreeAlgorithms {
+    private static final int INITIAL_STACK_SIZE = 100_000;
+    private static final int EXECUTION_TIME_SECONDS = 10;
+    private static final int PUSHING_THREADS = 2;
+    private static final int POPPING_THREADS = 2;
+
     public static void main(String[] args) throws InterruptedException {
-        //StandardStack<Integer> stack = new StandardStack<>();
+        StackDemo.builder()
+                .withInitialSize(INITIAL_STACK_SIZE)
+                .withPushingThreads(PUSHING_THREADS)
+                .withPoppingThreads(POPPING_THREADS)
+                .withExecutionTime(EXECUTION_TIME_SECONDS)
+                .build()
+                .run();
+    }
+}
+
+/**
+ * Builder class for stack demonstration configuration
+ */
+class StackDemo {
+    private final int initialSize;
+    private final int pushingThreads;
+    private final int poppingThreads;
+    private final int executionTimeSeconds;
+    private final Random random;
+
+    private StackDemo(Builder builder) {
+        this.initialSize = builder.initialSize;
+        this.pushingThreads = builder.pushingThreads;
+        this.poppingThreads = builder.poppingThreads;
+        this.executionTimeSeconds = builder.executionTimeSeconds;
+        this.random = new Random();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public void run() throws InterruptedException {
+        LockFreeStack<Integer> stack = initializeStack();
+        List<Thread> threads = createAndStartThreads(stack);
+        
+        TimeUnit.SECONDS.sleep(executionTimeSeconds);
+        
+        System.out.printf("%,d operations were performed in %d seconds %n", 
+            stack.getCounter(), executionTimeSeconds);
+    }
+
+    private LockFreeStack<Integer> initializeStack() {
         LockFreeStack<Integer> stack = new LockFreeStack<>();
-        Random random = new Random();
-
-        for (int i = 0; i < 100000; i++) {
-            stack.push(random.nextInt());
-        }
-
-        List<Thread> threads = new ArrayList<>();
-
-        int pushingThreads = 2;
-        int poppingThreads = 2;
-
-        for (int i = 0; i < pushingThreads; i++) {
-            Thread thread = new Thread(() -> {
-                while (true) {
-                    stack.push(random.nextInt());
-                }
-            });
-
-            thread.setDaemon(true);
-            threads.add(thread);
-        }
-
-        for (int i = 0; i < poppingThreads; i++) {
-            Thread thread = new Thread(() -> {
-                while (true) {
-                    stack.pop();
-                }
-            });
-
-            thread.setDaemon(true);
-            threads.add(thread);
-        }
-
-        for (Thread thread : threads) {
-            thread.start();
-        }
-
-        Thread.sleep(10000);
-
-        System.out.printf("%,d operations were performed in 10 seconds %n", stack.getCounter());
+        IntStream.range(0, initialSize)
+                .forEach(i -> stack.push(random.nextInt()));
+        return stack;
     }
 
-    public static class LockFreeStack<T> {
-        private final AtomicReference<StackNode<T>> head = new AtomicReference<>();
-        private final AtomicInteger counter = new AtomicInteger(0);
+    private List<Thread> createAndStartThreads(LockFreeStack<Integer> stack) {
+        List<Thread> threads = Stream.concat(
+            createPushingThreads(stack),
+            createPoppingThreads(stack)
+        ).collect(Collectors.toList());
 
-        public void push(T value) {
-            StackNode<T> newHeadNode = new StackNode<>(value);
-
-            while (true) {
-                StackNode<T> currentHeadNode = head.get();
-                newHeadNode.next = currentHeadNode;
-                if (head.compareAndSet(currentHeadNode, newHeadNode)) {
-                    break;
-                } else {
-                    LockSupport.parkNanos(1);
-                }
-            }
-            counter.incrementAndGet();
-        }
-
-        public T pop() {
-            StackNode<T> currentHeadNode = head.get();
-            StackNode<T> newHeadNode;
-
-            while (currentHeadNode != null) {
-                newHeadNode = currentHeadNode.next;
-                if (head.compareAndSet(currentHeadNode, newHeadNode)) {
-                    break;
-                } else {
-                    LockSupport.parkNanos(1);
-                    currentHeadNode = head.get();
-                }
-            }
-            counter.incrementAndGet();
-            return currentHeadNode != null ? currentHeadNode.value : null;
-        }
-
-        public int getCounter() {
-            return counter.get();
-        }
+        threads.forEach(Thread::start);
+        return threads;
     }
 
-    public static class StandardStack<T> {
-        private StackNode<T> head;
-        private int counter = 0;
-
-        public synchronized void push(T value) {
-            StackNode<T> newHead = new StackNode<>(value);
-            newHead.next = head;
-            head = newHead;
-            counter++;
-        }
-
-        public synchronized T pop() {
-            if (head == null) {
-                counter++;
-                return null;
-            }
-
-            T value = head.value;
-            head = head.next;
-            counter++;
-            return value;
-        }
-
-        public int getCounter() {
-            return counter;
-        }
+    private Stream<Thread> createPushingThreads(LockFreeStack<Integer> stack) {
+        return IntStream.range(0, pushingThreads)
+                .mapToObj(i -> createDaemonThread(() -> {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        stack.push(random.nextInt());
+                    }
+                }));
     }
 
-    private static class StackNode<T> {
-        private final T value;
-        private StackNode<T> next;
+    private Stream<Thread> createPoppingThreads(LockFreeStack<Integer> stack) {
+        return IntStream.range(0, poppingThreads)
+                .mapToObj(i -> createDaemonThread(() -> {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        stack.pop();
+                    }
+                }));
+    }
 
-        public StackNode(T value) {
-            this.value = value;
+    private Thread createDaemonThread(Runnable runnable) {
+        Thread thread = new Thread(runnable);
+        thread.setDaemon(true);
+        return thread;
+    }
+
+    static class Builder {
+        private int initialSize;
+        private int pushingThreads;
+        private int poppingThreads;
+        private int executionTimeSeconds;
+
+        public Builder withInitialSize(int size) {
+            this.initialSize = size;
+            return this;
+        }
+
+        public Builder withPushingThreads(int threads) {
+            this.pushingThreads = threads;
+            return this;
+        }
+
+        public Builder withPoppingThreads(int threads) {
+            this.poppingThreads = threads;
+            return this;
+        }
+
+        public Builder withExecutionTime(int seconds) {
+            this.executionTimeSeconds = seconds;
+            return this;
+        }
+
+        public StackDemo build() {
+            return new StackDemo(this);
         }
     }
 }
